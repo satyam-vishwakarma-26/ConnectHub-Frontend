@@ -1,0 +1,92 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./index.html', './src/**/*.{js,jsx}'],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['"DM Sans"', 'sans-serif'],
+        display: ['"Syne"', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace'],
+      },
+      colors: {
+        brand: {
+          50:  '#eceaf9',
+          100: '#d4d0f3',
+          200: '#aca2ea',
+          300: '#8474e1',
+          400: '#5c46d8',
+          500: '#3b2dbe',
+          600: '#2c249b',
+          700: '#211d7a',
+          800: '#170c79',
+          900: '#120a57',
+          950: '#0c0733',
+        },
+        sea: {
+          50:  '#f0fbfb',
+          100: '#def6f6',
+          200: '#bfeced',
+          300: '#9bdddf',
+          400: '#7ad2d0',
+          500: '#56b6c6',
+          600: '#409da9',
+          700: '#327a7f',
+          800: '#265b5f',
+          900: '#173b3d',
+        },
+        blue: {
+          50:  '#eef6fb',
+          100: '#d9e9f7',
+          200: '#b2d3ee',
+          300: '#8fb8e3',
+          400: '#6f98d0',
+          500: '#568cc2',
+          600: '#406fa5',
+          700: '#30567f',
+          800: '#243f5b',
+          900: '#172a39',
+        },
+        beige: {
+          50:  '#fdf9f0',
+          100: '#f9efe0',
+          200: '#f2dfc2',
+          300: '#ead0a5',
+          400: '#ddbd84',
+          500: '#d1aa68',
+          600: '#b88f54',
+          700: '#927543',
+          800: '#6f5a32',
+          900: '#4f4225',
+        },
+        surface: {
+          50:  '#f8f9fc',
+          100: '#f0f2f8',
+          200: '#e2e6f0',
+          800: '#1a1a1a',
+          850: '#111111',
+          900: '#0a0a0a',
+          950: '#050505',
+        }
+      },
+      animation: {
+        'fade-in':    'fadeIn 0.3s ease forwards',
+        'slide-up':   'slideUp 0.35s cubic-bezier(0.16,1,0.3,1) forwards',
+        'slide-right':'slideRight 0.35s cubic-bezier(0.16,1,0.3,1) forwards',
+        'pulse-slow': 'pulse 3s ease-in-out infinite',
+        'glow':       'glow 2s ease-in-out infinite alternate',
+      },
+      keyframes: {
+        fadeIn:    { from: { opacity: 0 }, to: { opacity: 1 } },
+        slideUp:   { from: { opacity: 0, transform: 'translateY(16px)' }, to: { opacity: 1, transform: 'translateY(0)' } },
+        slideRight:{ from: { opacity: 0, transform: 'translateX(-16px)' }, to: { opacity: 1, transform: 'translateX(0)' } },
+        glow:      { from: { boxShadow: '0 0 20px rgba(232,93,63,0.3)' }, to: { boxShadow: '0 0 40px rgba(232,93,63,0.6)' } },
+      },
+      boxShadow: {
+        'glass': '0 8px 32px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.1)',
+        'glow-brand': '0 0 30px rgba(232,93,63,0.35)',
+      }
+    },
+  },
+  plugins: [],
+}
