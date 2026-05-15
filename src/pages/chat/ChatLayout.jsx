@@ -399,7 +399,7 @@ export default function ChatLayout() {
   const getStatus = (userId) => presenceMap[userId]?.status || 'INVISIBLE'
 
   return (
-    <div className="flex h-full w-full relative">
+    <div className="flex h-full w-full relative overflow-hidden">
 
       {/* ══════════════════════════════════════════════════
           SIDEBAR — unified contacts panel
@@ -409,7 +409,7 @@ export default function ChatLayout() {
           ${!hasActiveChat ? 'flex flex-col w-full' : 'hidden'}
           lg:flex lg:flex-col lg:w-80 xl:w-96 lg:static
         `}
-        style={{ borderColor: 'var(--border)' }}
+        style={{ borderColor: 'var(--border)', height: '100%' }}
       >
         {/* ── Header ── */}
         <div
@@ -520,7 +520,7 @@ export default function ChatLayout() {
         </div>
 
         {/* ── List ── */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto pb-20 md:pb-0">
 
           {/* Loading skeleton */}
           {loadingRooms && (
@@ -606,7 +606,7 @@ export default function ChatLayout() {
         </div>
 
         {/* ── Mobile Floating Action Button (FAB) ── */}
-        <div className="md:hidden absolute bottom-[85px] right-4 z-[90]">
+        <div className="md:hidden fixed bottom-[72px] right-4 z-[90]">
           <button
             onClick={() => setNewDmOpen(true)}
             className="fab-btn w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg hover:scale-105 transition-transform"
@@ -617,8 +617,8 @@ export default function ChatLayout() {
 
         {/* ── Mobile Bottom Navigation ── */}
         <div
-          className="md:hidden flex shrink-0 border-t justify-around items-center pt-1.5 pb-5 px-2 z-[80] relative"
-          style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border)' }}
+          className="md:hidden fixed bottom-0 left-0 right-0 flex border-t justify-around items-center pt-1.5 pb-safe px-2 z-[80]"
+          style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border)', paddingBottom: 'max(env(safe-area-inset-bottom), 12px)' }}
         >
           {/* Settings Popover */}
           {mobileSettingsOpen && (

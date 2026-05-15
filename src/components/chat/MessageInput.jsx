@@ -104,7 +104,7 @@ export default function MessageInput({ roomId, recipientId, onSend, replyTo, onC
   }
 
   return (
-    <div className="border-t px-4 py-3" style={{ borderColor: 'var(--border)', background: 'var(--bg-secondary)' }}>
+    <div className="border-t px-3 py-2 md:px-4 md:py-3" style={{ borderColor: 'var(--border)', background: 'var(--bg-secondary)' }}>
 
       {/* Reply preview */}
       {replyTo && (
@@ -206,7 +206,7 @@ export default function MessageInput({ roomId, recipientId, onSend, replyTo, onC
         </button>
       </div>
 
-      <p className="text-xs mt-1.5" style={{ color: 'var(--text-muted)' }}>
+      <p className="hidden md:block text-xs mt-1.5" style={{ color: 'var(--text-muted)' }}>
         <kbd className="px-1 py-0.5 rounded text-xs"
              style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}>
           Enter

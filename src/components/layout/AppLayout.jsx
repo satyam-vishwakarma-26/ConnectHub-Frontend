@@ -44,11 +44,11 @@ export default function AppLayout() {
 
   return (
     <NotificationCenterProvider>
-      <div className="flex h-screen overflow-hidden flex-col md:flex-row">
+      <div className="flex h-full overflow-hidden flex-col md:flex-row" style={{ minHeight: '100dvh' }}>
         
         <Sidebar mobileOpen={false} onClose={() => {}} />
 
-        <main className="flex-1 min-w-0 overflow-hidden flex flex-col relative"
+        <main className="flex-1 min-w-0 min-h-0 overflow-hidden flex flex-col relative"
               style={{ background: 'var(--bg-primary)' }}>
           <UpgradeBanner />
           <Outlet />
