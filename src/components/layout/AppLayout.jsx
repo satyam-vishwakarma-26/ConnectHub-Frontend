@@ -44,7 +44,7 @@ export default function AppLayout() {
 
   return (
     <NotificationCenterProvider>
-      <div className="flex h-full overflow-hidden flex-col md:flex-row" style={{ minHeight: '100dvh' }}>
+      <div className="flex h-full w-full overflow-hidden flex-col md:flex-row">
         
         <Sidebar mobileOpen={false} onClose={() => {}} />
 

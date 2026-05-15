@@ -93,6 +93,10 @@ html, body {
   height: 100%;
   /* Use dynamic viewport height on mobile to account for browser chrome */
   height: 100dvh;
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+  width: 100%;
 }
 
 body {
@@ -110,8 +114,8 @@ body {
 }
 
 #root {
-  height: 100%;
-  height: 100dvh;
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
