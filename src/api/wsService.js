@@ -27,8 +27,9 @@ class WebSocketService {
   connect(token) {
     if (this.connected) return
 
+    const API_BASE_URL = import.meta.env.VITE_API_URL || ''
     this.client = new Client({
-      webSocketFactory: () => new SockJS('/ws'),
+      webSocketFactory: () => new SockJS(`${API_BASE_URL}/ws`),
       connectHeaders: { Authorization: `Bearer ${token}` },
       reconnectDelay: this.reconnectDelay,
       heartbeatIncoming: 4000,

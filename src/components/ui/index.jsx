@@ -4,9 +4,10 @@ import { Loader2, X, Eye, EyeOff } from 'lucide-react'
 
 // ── Input ─────────────────────────────────────────────────
 export const Input = forwardRef(({
-  label, error, icon: Icon, className = '', ...props
+  label, error, icon: Icon, className = '', id, ...props
 }, ref) => {
   const [showPassword, setShowPassword] = useState(false)
+  const inputId = id || `input-${label?.replace(/\s+/g, '-').toLowerCase()}`
   const hasValue = typeof props.value !== 'undefined' && props.value !== null && String(props.value).length > 0
   const isPassword = props.type === 'password'
 
@@ -15,13 +16,14 @@ export const Input = forwardRef(({
   return (
   <div className="flex flex-col gap-1.5">
     {label && (
-      <label className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+      <label htmlFor={inputId} className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
         {label}
       </label>
     )}
     <div className="relative">
       <input
         ref={ref}
+        id={inputId}
         className={cn('input-base', Icon && 'input-with-icon', isPassword && 'input-with-action', className)}
         style={error ? { borderColor: 'var(--danger)' } : {}}
         {...props}
@@ -58,26 +60,26 @@ Input.displayName = 'Input'
 
 // ── Textarea ──────────────────────────────────────────────
 export const Textarea = forwardRef(({
-  label, error, className = '', rows = 3, ...props
-}, ref) => (
+  label, error, className = '', rows = 3, id, ...props
+}, ref) => {
+  const inputId = id || `textarea-${label?.replace(/\s+/g, '-').toLowerCase()}`
+  return (
   <div className="flex flex-col gap-1.5">
     {label && (
-      <label className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+      <label htmlFor={inputId} className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
         {label}
       </label>
     )}
     <textarea
       ref={ref}
+      id={inputId}
       rows={rows}
       className={cn('input-base resize-none', className)}
       style={{ ...(error ? { borderColor: 'var(--danger)' } : {}), lineHeight: 1.6 }}
       {...props}
     />
-    {error && (
-      <p className="text-xs" style={{ color: 'var(--danger)' }}>{error}</p>
-    )}
   </div>
-))
+)})
 Textarea.displayName = 'Textarea'
 
 // ── Button ────────────────────────────────────────────────

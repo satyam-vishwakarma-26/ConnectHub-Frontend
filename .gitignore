@@ -1,3 +1,14 @@
 node_modules
 dist
 .env
+
+coverage/
+test-results/
+.playwright/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

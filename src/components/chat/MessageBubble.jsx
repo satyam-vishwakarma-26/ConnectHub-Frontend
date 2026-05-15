@@ -8,7 +8,7 @@ const QUICK_REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🔥']
 
 const DELIVERY_ICONS = {
   SENT:      <Check size={12} style={{ color: 'rgba(255,255,255,0.6)' }} />,
-  DELIVERED: <CheckCheck size={12} style={{ color: 'rgba(255,255,255,0.6)' }} />,
+  DELIVERED: <CheckCheck size={12} style={{ color: 'rgba(206, 114, 114, 0.6)' }} />,
   READ:      <CheckCheck size={12} style={{ color: '#60d0ff' }} />,
 }
 
@@ -163,6 +163,7 @@ export default function MessageBubble({
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setShowMenu(m => !m)}
+                  aria-label="More actions"
                   className="p-1.5 rounded-full surface-card transition-transform hover:scale-105"
                   style={{ color: 'var(--text-muted)' }}
                 >

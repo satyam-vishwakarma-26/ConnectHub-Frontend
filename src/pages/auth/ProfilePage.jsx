@@ -201,10 +201,11 @@ function EditProfileForm({ user, onSave, isLoading }) {
              placeholder="https://..." />
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+        <label htmlFor="avatar-upload" className="block text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
           Upload Profile Picture
         </label>
         <input
+          id="avatar-upload"
           ref={fileInputRef}
           type="file"
           accept="image/*"

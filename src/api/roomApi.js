@@ -1,8 +1,10 @@
 import axios from 'axios'
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || ''
+
 // ── Axios instance for room-service ──────────────────────
 const roomApi = axios.create({
-  baseURL: '/api/rooms',
+  baseURL: `${API_BASE_URL}/api/rooms`,
   headers: { 'Content-Type': 'application/json' },
 })
 

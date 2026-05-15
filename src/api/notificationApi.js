@@ -1,7 +1,9 @@
 import axios from 'axios'
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || ''
+
 const notificationApi = axios.create({
-  baseURL: '/api/notifications',
+  baseURL: `${API_BASE_URL}/api/notifications`,
   headers: { 'Content-Type': 'application/json' },
 })
 

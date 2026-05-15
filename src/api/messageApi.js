@@ -1,7 +1,9 @@
 import axios from 'axios'
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || ''
+
 const messageApi = axios.create({
-  baseURL: '/api/messages',
+  baseURL: `${API_BASE_URL}/api/messages`,
   headers: { 'Content-Type': 'application/json' },
 })
 

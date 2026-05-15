@@ -148,12 +148,12 @@ export default function LoginPage() {
 
           <div className="divider my-5 sm:my-6">or continue with</div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <a href="/api/oauth2/authorization/google"
+            <a href="http://13.50.25.162:8080/api/oauth2/authorization/google"
                className="btn-secondary flex items-center justify-center gap-2 no-underline">
               <GoogleIcon />
               Google
             </a>
-            <a href="/api/oauth2/authorization/github"
+            <a href="http://13.50.25.162:8080/api/oauth2/authorization/github"
                className="btn-secondary flex items-center justify-center gap-2 no-underline">
               <GithubIcon />
               GitHub

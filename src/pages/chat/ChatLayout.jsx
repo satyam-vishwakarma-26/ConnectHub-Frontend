@@ -19,17 +19,7 @@ import { useSubscriptionStore } from '../../context/subscriptionStore'
 import { formatRelativeTime, STATUS_COLORS, STATUS_LABELS, getAvatarGradient, timeAgo } from '../../utils/helpers'
 import toast from 'react-hot-toast'
 
-// ─────────────────────────────────────────────────────────────
-//  BUG FIX #4 — No DM contact panel in the UI
-//
-//  Previously ChatLayout only showed group rooms.  The /chat/dm/:id
-//  route existed but there was no way to navigate to it from the UI.
-//
-//  Fix: unified sidebar with two tabs (Rooms / DMs), presence dots,
-//  unread badges, search, and a member panel for group rooms.
-//  DM conversations are surfaced by calling the message-service
-//  getDirect endpoint to find existing chats, plus a user-search
-//  flow to start new ones.
+
 // ─────────────────────────────────────────────────────────────
 
 const TABS = ['All', 'Rooms', 'DMs']

@@ -1,8 +1,10 @@
 import axios from 'axios'
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || ''
+
 // ── Axios instance for payment-service (via gateway) ──────
 const paymentApi = axios.create({
-  baseURL: '/api/payments',
+  baseURL: `${API_BASE_URL}/api/payments`,
   headers: { 'Content-Type': 'application/json' },
 })
 
