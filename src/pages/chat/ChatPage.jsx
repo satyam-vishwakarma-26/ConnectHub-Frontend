@@ -822,6 +822,7 @@ export default function ChatPage() {
                 canPin={!isDirectChat && isAdmin}
                 canAdminDelete={!isDirectChat && isAdmin}
                 isSenderAdmin={msgSenderIsAdmin}
+                onImageClick={setFullScreenImage}
               />
             )
           })}

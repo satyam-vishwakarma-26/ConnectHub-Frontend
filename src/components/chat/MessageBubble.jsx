@@ -13,7 +13,7 @@ const DELIVERY_ICONS = {
 }
 
 export default function MessageBubble({
-  message, onReact, onEdit, onDelete, onAdminDelete, onReply, onPin, canPin = false, canAdminDelete = false, showAvatar = true
+  message, onReact, onEdit, onDelete, onAdminDelete, onReply, onPin, canPin = false, canAdminDelete = false, showAvatar = true, onImageClick
 }) {
   const { user } = useAuthStore()
   const isOwn = user?.id != null && String(message.senderId) === String(user.id)
@@ -30,6 +30,8 @@ export default function MessageBubble({
 
   const isImageMessage = message.type === 'IMAGE' ||
     (message.mediaUrl && /\.(jpe?g|png|gif|webp|bmp|tiff|svg|avif|heic|heif)(\?.*)?$/i.test(message.mediaUrl))
+
+  const hasText = Boolean(message.content && message.content.trim().length > 0);
 
   if (message.isDeleted) {
     return (
@@ -84,15 +86,16 @@ export default function MessageBubble({
         {/* Bubble */}
         <div className="relative">
           <div
-            className={`max-w-full ${message.content ? (isOwn ? 'msg-bubble-own px-3 py-2 border' : 'msg-bubble-other px-3 py-2 border') : ''}`}
-            style={{ borderColor: message.content ? (isOwn ? 'rgba(255,255,255,0.08)' : 'var(--border)') : 'transparent' }}
+            className={`max-w-full ${hasText ? (isOwn ? 'msg-bubble-own px-3 py-2 border' : 'msg-bubble-other px-3 py-2 border') : ''}`}
+            style={{ borderColor: hasText ? (isOwn ? 'rgba(255,255,255,0.08)' : 'var(--border)') : 'transparent' }}
           >
             {/* Image */}
             {isImageMessage && message.mediaUrl && (
-              <div className={`relative group/image flex justify-start ${message.content ? 'mb-2' : ''}`}>
+              <div className={`relative group/image flex justify-start ${hasText ? 'mb-2' : ''}`}>
                 <img src={message.mediaUrl} alt="attachment"
-                     className="rounded-xl max-w-[240px] sm:max-w-xs md:max-w-md max-h-64 object-contain" 
-                     style={{ background: !message.content ? 'transparent' : 'rgba(0,0,0,0.05)' }} />
+                     onClick={() => onImageClick?.(message.mediaUrl)}
+                     className="rounded-xl max-w-[240px] sm:max-w-xs md:max-w-md max-h-64 object-contain cursor-pointer transition-transform hover:scale-[1.02]" 
+                     style={{ background: !hasText ? 'transparent' : 'rgba(0,0,0,0.05)' }} />
                 <a 
                   href={message.mediaUrl?.replace('/upload/', '/upload/fl_attachment/')} 
                   target="_blank" 
@@ -110,10 +113,10 @@ export default function MessageBubble({
             {/* File */}
             {message.type === 'FILE' && message.mediaUrl && !isImageMessage && (
               <a href={message.mediaUrl?.replace('/upload/', '/upload/fl_attachment/')} target="_blank" rel="noopener noreferrer" download={`file-${message.id}`}
-                 className={`flex items-center gap-3 p-3 rounded-xl hover:opacity-80 transition-opacity no-underline ${!message.content ? (isOwn ? 'msg-bubble-own border' : 'msg-bubble-other border') : 'mb-2'}`}
+                 className={`flex items-center gap-3 p-3 rounded-xl hover:opacity-80 transition-opacity no-underline ${!hasText ? (isOwn ? 'msg-bubble-own border' : 'msg-bubble-other border') : 'mb-2'}`}
                  style={{ 
-                   background: message.content ? (isOwn ? 'rgba(0,0,0,0.1)' : 'var(--bg-tertiary)') : undefined,
-                   borderColor: !message.content ? (isOwn ? 'rgba(255,255,255,0.08)' : 'var(--border)') : 'transparent'
+                   background: hasText ? (isOwn ? 'rgba(0,0,0,0.1)' : 'var(--bg-tertiary)') : undefined,
+                   borderColor: !hasText ? (isOwn ? 'rgba(255,255,255,0.08)' : 'var(--border)') : 'transparent'
                  }}
                  onClick={(e) => e.stopPropagation()}>
                 <div className="p-2 rounded-lg" style={{ background: isOwn ? 'rgba(255,255,255,0.15)' : 'var(--bg-secondary)' }}>
@@ -132,15 +135,15 @@ export default function MessageBubble({
             )}
 
             {/* Text */}
-            {message.content && (
+            {hasText && (
               <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">
                 {message.content}
               </p>
             )}
 
             {/* Meta row */}
-            <div className={`flex items-center gap-1.5 ${message.content ? 'mt-2' : 'mt-1.5'} ${isOwn ? 'justify-end' : 'justify-start'}`}>
-              <span className="text-[11px] opacity-70" style={{ color: !message.content ? 'var(--text-muted)' : 'inherit' }}>
+            <div className={`flex items-center gap-1.5 ${hasText ? 'mt-2' : 'mt-1.5'} ${isOwn ? 'justify-end' : 'justify-start'}`}>
+              <span className="text-[11px] opacity-70" style={{ color: !hasText ? 'var(--text-muted)' : 'inherit' }}>
                 {formatMessageTime(message.sentAt)}
                 {message.isEdited && ' · edited'}
               </span>
@@ -216,13 +219,15 @@ export default function MessageBubble({
                     )}
                     {isOwn && (
                       <>
-                        <button
-                          onClick={() => { onEdit?.(message); setShowMenu(false) }}
-                          className="flex items-center gap-2 w-full px-3 py-2.5 text-sm hover:opacity-90 transition-opacity text-left surface-card"
-                          style={{ color: 'var(--text-primary)' }}
-                        >
-                          <Edit3 size={13} /> Edit
-                        </button>
+                        {!message.mediaUrl && (
+                          <button
+                            onClick={() => { onEdit?.(message); setShowMenu(false) }}
+                            className="flex items-center gap-2 w-full px-3 py-2.5 text-sm hover:opacity-90 transition-opacity text-left surface-card"
+                            style={{ color: 'var(--text-primary)' }}
+                          >
+                            <Edit3 size={13} /> Edit
+                          </button>
+                        )}
                         <button
                           onClick={() => { onDelete?.(message.id); setShowMenu(false) }}
                           className="flex items-center gap-2 w-full px-3 py-2.5 text-sm hover:opacity-90 transition-opacity text-left surface-card"
