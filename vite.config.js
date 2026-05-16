@@ -9,8 +9,8 @@ export default defineConfig({
     setupFiles: './src/test/setup.js',
     exclude: ['**/node_modules/**', '**/dist/**', '**/tests/**'],
   },
-  // Use relative asset paths in production so CSS/JS still load under nested routes/proxy contexts.
-  base: './',
+  // Use absolute asset paths in production so CSS/JS load correctly under nested routes.
+  base: '/',
 
   plugins: [react()],
 
