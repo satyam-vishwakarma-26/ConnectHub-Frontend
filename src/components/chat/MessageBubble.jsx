@@ -39,6 +39,21 @@ export default function MessageBubble({
     return url.replace('/upload/', '/upload/fl_attachment/');
   };
 
+  const getFileName = (url) => {
+    if (!url) return 'Document / File';
+    try {
+      const parts = url.split('/');
+      let filename = parts[parts.length - 1].split('?')[0];
+      // Backend prefixes files with a 36-character UUID and a dash
+      if (filename.length > 37 && filename.charAt(36) === '-') {
+        filename = filename.substring(37);
+      }
+      return decodeURIComponent(filename);
+    } catch (e) {
+      return 'Document / File';
+    }
+  };
+
   if (message.isDeleted) {
     return (
       <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'} mb-2`}>
@@ -122,8 +137,8 @@ export default function MessageBubble({
                 <FileText size={20} />
               </div>
               <div className="flex-1 min-w-0 pr-2">
-                <p className="text-sm font-medium truncate" style={{ color: isOwn ? '#fff' : 'var(--text-primary)' }}>
-                  Document / File
+                <p className="text-sm font-medium truncate" style={{ color: isOwn ? '#fff' : 'var(--text-primary)' }} title={getFileName(message.mediaUrl)}>
+                  {getFileName(message.mediaUrl)}
                 </p>
                 <p className="text-[10px] opacity-70 mt-0.5">Click to download</p>
               </div>
