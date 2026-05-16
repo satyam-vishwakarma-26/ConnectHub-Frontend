@@ -89,75 +89,82 @@ export default function MessageBubble({
           </div>
         )}
 
-        {/* Bubble */}
-        <div className="relative">
-          <div
-            className={`max-w-full ${hasText ? (isOwn ? 'msg-bubble-own px-3 py-2 border' : 'msg-bubble-other px-3 py-2 border') : ''}`}
-            style={{ borderColor: hasText ? (isOwn ? 'rgba(255,255,255,0.08)' : 'var(--border)') : 'transparent' }}
-          >
-            {/* Image */}
-            {isImageMessage && message.mediaUrl && (
-              <div className={`relative group/image flex justify-start ${hasText ? 'mb-2' : ''}`}>
-                <img src={message.mediaUrl} alt="attachment"
-                     onClick={() => onImageClick?.(message.mediaUrl)}
-                     className="rounded-xl max-w-[240px] sm:max-w-xs md:max-w-md max-h-64 object-contain cursor-pointer transition-transform hover:scale-[1.02]" 
-                     style={{ background: !hasText ? 'transparent' : 'rgba(0,0,0,0.05)' }} />
-                <a 
-                  href={getDownloadUrl(message.mediaUrl)} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  download={`image-${message.id}`}
-                  className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/60 text-white opacity-0 group-hover/image:opacity-100 transition-opacity hover:bg-black/80 backdrop-blur-sm"
-                  title="Download Image"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Download size={16} />
-                </a>
-              </div>
-            )}
-
-            {/* File */}
-            {message.type === 'FILE' && message.mediaUrl && !isImageMessage && (
-              <a href={getDownloadUrl(message.mediaUrl)} target="_blank" rel="noopener noreferrer" download={`file-${message.id}`}
-                 className={`flex items-center gap-3 p-3 rounded-xl hover:opacity-80 transition-opacity no-underline ${!hasText ? (isOwn ? 'msg-bubble-own border' : 'msg-bubble-other border') : 'mb-2'}`}
-                 style={{ 
-                   background: hasText ? (isOwn ? 'rgba(0,0,0,0.1)' : 'var(--bg-tertiary)') : undefined,
-                   borderColor: !hasText ? (isOwn ? 'rgba(255,255,255,0.08)' : 'var(--border)') : 'transparent'
-                 }}
-                 onClick={(e) => e.stopPropagation()}>
-                <div className="p-2 rounded-lg" style={{ background: isOwn ? 'rgba(255,255,255,0.15)' : 'var(--bg-secondary)' }}>
-                  <FileText size={20} />
-                </div>
-                <div className="flex-1 min-w-0 pr-2">
-                  <p className="text-sm font-medium truncate" style={{ color: isOwn ? '#fff' : 'var(--text-primary)' }}>
-                    Document / File
-                  </p>
-                  <p className="text-[10px] opacity-70 mt-0.5">Click to download</p>
-                </div>
-                <div className="p-1.5 rounded-full" style={{ background: isOwn ? 'rgba(255,255,255,0.2)' : 'var(--bg-secondary)' }}>
-                  <Download size={14} />
-                </div>
+        {/* Stacked Message Elements */}
+        <div className="relative flex flex-col gap-1" style={{ alignItems: isOwn ? 'flex-end' : 'flex-start' }}>
+          
+          {/* Image */}
+          {isImageMessage && message.mediaUrl && (
+            <div className="relative group/image flex justify-start rounded-xl overflow-hidden shadow-sm" style={{ background: 'rgba(0,0,0,0.05)' }}>
+              <img src={message.mediaUrl} alt="attachment"
+                   onClick={() => onImageClick?.(message.mediaUrl)}
+                   className="max-w-[240px] sm:max-w-xs md:max-w-md max-h-64 object-contain cursor-pointer transition-transform hover:scale-[1.02]" />
+              <a 
+                href={getDownloadUrl(message.mediaUrl)} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                download={`image-${message.id}`}
+                className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/60 text-white opacity-0 group-hover/image:opacity-100 transition-opacity hover:bg-black/80 backdrop-blur-sm"
+                title="Download Image"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Download size={16} />
               </a>
-            )}
+            </div>
+          )}
 
-            {/* Text */}
-            {hasText && (
+          {/* File */}
+          {message.type === 'FILE' && message.mediaUrl && !isImageMessage && (
+            <a href={getDownloadUrl(message.mediaUrl)} target="_blank" rel="noopener noreferrer" download={`file-${message.id}`}
+               className={`flex items-center gap-3 p-3 rounded-xl hover:opacity-80 transition-opacity no-underline ${isOwn ? 'msg-bubble-own border' : 'msg-bubble-other border'}`}
+               style={{ borderColor: isOwn ? 'rgba(255,255,255,0.08)' : 'var(--border)' }}
+               onClick={(e) => e.stopPropagation()}>
+              <div className="p-2 rounded-lg" style={{ background: isOwn ? 'rgba(255,255,255,0.15)' : 'var(--bg-secondary)' }}>
+                <FileText size={20} />
+              </div>
+              <div className="flex-1 min-w-0 pr-2">
+                <p className="text-sm font-medium truncate" style={{ color: isOwn ? '#fff' : 'var(--text-primary)' }}>
+                  Document / File
+                </p>
+                <p className="text-[10px] opacity-70 mt-0.5">Click to download</p>
+              </div>
+              <div className="p-1.5 rounded-full" style={{ background: isOwn ? 'rgba(255,255,255,0.2)' : 'var(--bg-secondary)' }}>
+                <Download size={14} />
+              </div>
+            </a>
+          )}
+
+          {/* Text Bubble & Meta */}
+          {hasText ? (
+            <div
+              className={`max-w-full px-3 py-2 border ${isOwn ? 'msg-bubble-own' : 'msg-bubble-other'}`}
+              style={{ borderColor: isOwn ? 'rgba(255,255,255,0.08)' : 'var(--border)' }}
+            >
               <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">
                 {message.content}
               </p>
-            )}
-
-            {/* Meta row */}
-            <div className={`flex items-center gap-1.5 ${hasText ? 'mt-2' : 'mt-1.5'} ${isOwn ? 'justify-end' : 'justify-start'}`}>
-              <span className="text-[11px] opacity-70" style={{ color: !hasText ? 'var(--text-muted)' : 'inherit' }}>
+              <div className={`flex items-center gap-1.5 mt-1 ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                <span className="text-[10px] opacity-70">
+                  {formatMessageTime(message.sentAt)}
+                  {message.isEdited && ' · edited'}
+                </span>
+                {isOwn && (
+                  <span>{DELIVERY_ICONS[message.deliveryStatus] || DELIVERY_ICONS.SENT}</span>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className={`flex items-center gap-1.5 px-1 mt-0.5 ${isOwn ? 'justify-end' : 'justify-start'}`}>
+              <span className="text-[10px] opacity-70" style={{ color: 'var(--text-muted)' }}>
                 {formatMessageTime(message.sentAt)}
                 {message.isEdited && ' · edited'}
               </span>
               {isOwn && (
-                <span>{DELIVERY_ICONS[message.deliveryStatus] || DELIVERY_ICONS.SENT}</span>
+                <span style={{ color: 'var(--text-muted)' }}>
+                  {DELIVERY_ICONS[message.deliveryStatus] || DELIVERY_ICONS.SENT}
+                </span>
               )}
             </div>
-          </div>
+          )}
 
           {/* Hover actions */}
           <div
