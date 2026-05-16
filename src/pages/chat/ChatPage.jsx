@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import {
   Hash, Users, Search, MoreVertical, X, ChevronLeft,
   Pin, MessageCircle, UserPlus, VolumeX, Volume2, Shield, ShieldOff, Trash2,
-  LogOut, Eraser, Camera, Edit3,
+  LogOut, Eraser, Camera, Edit3, Palette, CheckCircle2
 } from 'lucide-react'
 import { useMessages }        from '../../hooks/useMessages'
 import MessageBubble          from '../../components/chat/MessageBubble'
@@ -30,6 +30,14 @@ const STATUS_DOT_COLOR = {
   DND:       '#170C79',
   INVISIBLE: '#6b7280',
 }
+
+export const CHAT_THEMES = [
+  { id: 'default', name: 'ConnectHub Default', gradient: 'linear-gradient(135deg, var(--brand), var(--blue))', shadow: 'rgba(99, 102, 241, 0.3)' },
+  { id: 'sunset', name: 'Sunset Glow', gradient: 'linear-gradient(135deg, #f97316, #ec4899)', shadow: 'rgba(249, 115, 22, 0.3)' },
+  { id: 'ocean', name: 'Deep Ocean', gradient: 'linear-gradient(135deg, #0d9488, #3b82f6)', shadow: 'rgba(13, 148, 136, 0.3)' },
+  { id: 'forest', name: 'Mystic Forest', gradient: 'linear-gradient(135deg, #10b981, #059669)', shadow: 'rgba(16, 185, 129, 0.3)' },
+  { id: 'midnight', name: 'Midnight Purple', gradient: 'linear-gradient(135deg, #312e81, #7e22ce)', shadow: 'rgba(126, 34, 206, 0.3)' },
+]
 
 export default function ChatPage() {
   const { roomId, userId } = useParams()
@@ -77,6 +85,10 @@ export default function ChatPage() {
   // DM Peer Profile
   const [peerProfileOpen, setPeerProfileOpen] = useState(false)
   const [fullScreenImage, setFullScreenImage] = useState(null)
+
+  // Chat Theme
+  const [activeTheme, setActiveTheme] = useState('default')
+  const [themeSelectorOpen, setThemeSelectorOpen] = useState(false)
 
   const describeError = useCallback((err) => {
     const s = err?.response?.status
@@ -185,6 +197,22 @@ export default function ChatPage() {
 
     load()
   }, [activeRoomId, isDirectChat, describeError])
+
+  // Load Theme
+  useEffect(() => {
+    const key = activeRoomId ? `chat_theme_room_${activeRoomId}` : (directPeerId ? `chat_theme_dm_${directPeerId}` : null)
+    if (key) {
+      setActiveTheme(localStorage.getItem(key) || 'default')
+    }
+  }, [activeRoomId, directPeerId])
+
+  const handleThemeChange = (themeId) => {
+    setActiveTheme(themeId)
+    const key = activeRoomId ? `chat_theme_room_${activeRoomId}` : (directPeerId ? `chat_theme_dm_${directPeerId}` : null)
+    if (key) {
+      localStorage.setItem(key, themeId)
+    }
+  }
 
   // ── Real-time presence via WebSocket ─────────────────
   // Updates the local presenceMap whenever a PRESENCE_UPDATE event
@@ -708,7 +736,15 @@ export default function ChatPage() {
           </div>
 
           {/* Header actions */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <button
+              onClick={() => setThemeSelectorOpen(true)}
+              className="p-2 rounded-xl transition-colors hover:opacity-70"
+              style={{ color: 'var(--brand)', background: 'var(--brand-light)' }}
+              title="Change Theme"
+            >
+              <Palette size={16} />
+            </button>
             {!isDirectChat && (
               <button
                 onClick={() => setSearchOpen(true)}
@@ -765,7 +801,14 @@ export default function ChatPage() {
         <div
           className="flex-1 overflow-y-auto px-3 sm:px-5 py-4 chat-surface"
           onScroll={handleScroll}
-          style={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: 2,
+            background: (CHAT_THEMES.find(t => t.id === activeTheme) || CHAT_THEMES[0]).id !== 'default' 
+              ? (CHAT_THEMES.find(t => t.id === activeTheme) || CHAT_THEMES[0]).background 
+              : undefined
+          }}
         >
           {hasMore && (
             <div className="flex justify-center py-3">
@@ -823,6 +866,7 @@ export default function ChatPage() {
                 canAdminDelete={!isDirectChat && isAdmin}
                 isSenderAdmin={msgSenderIsAdmin}
                 onImageClick={setFullScreenImage}
+                themeConfig={CHAT_THEMES.find(t => t.id === activeTheme) || CHAT_THEMES[0]}
               />
             )
           })}
@@ -1358,6 +1402,53 @@ export default function ChatPage() {
                <span className="font-medium tracking-wide uppercase text-[10px]">{peerPresenceLabel}</span>
             </p>
           </div>
+
+          <div className="w-full pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
+            <button
+              onClick={() => { setPeerProfileOpen(false); setThemeSelectorOpen(true); }}
+              className="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-colors hover:opacity-80"
+              style={{ background: 'var(--bg-tertiary)' }}
+            >
+              <div className="flex items-center gap-3" style={{ color: 'var(--text-primary)' }}>
+                <div className="p-2 rounded-lg" style={{ background: 'var(--brand-light)', color: 'var(--brand)' }}>
+                  <Palette size={18} />
+                </div>
+                <span className="font-medium text-sm">Chat Theme</span>
+              </div>
+              <div className="w-6 h-6 rounded-full shadow-sm" style={{ background: (CHAT_THEMES.find(t => t.id === activeTheme) || CHAT_THEMES[0]).gradient }} />
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Theme Selector Modal */}
+      <Modal
+        open={themeSelectorOpen}
+        onClose={() => setThemeSelectorOpen(false)}
+        title="Choose Theme"
+      >
+        <div className="grid grid-cols-2 gap-3 py-2">
+          {CHAT_THEMES.map(t => (
+            <button
+              key={t.id}
+              onClick={() => handleThemeChange(t.id)}
+              className="flex flex-col items-center gap-3 p-4 rounded-2xl transition-all border-2"
+              style={{ 
+                borderColor: activeTheme === t.id ? 'var(--brand)' : 'var(--border)',
+                background: activeTheme === t.id ? 'var(--bg-hover)' : 'var(--bg-tertiary)'
+              }}
+            >
+              <div 
+                className="w-16 h-16 rounded-full shadow-lg flex items-center justify-center animate-gradient"
+                style={{ background: t.gradient, backgroundSize: '200% 200%' }}
+              >
+                {activeTheme === t.id && <CheckCircle2 size={24} color="#fff" />}
+              </div>
+              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                {t.name}
+              </span>
+            </button>
+          ))}
         </div>
       </Modal>
 

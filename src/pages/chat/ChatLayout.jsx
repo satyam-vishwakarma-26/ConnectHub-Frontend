@@ -788,7 +788,7 @@ export default function ChatLayout() {
 function SectionLabel({ label }) {
   return (
     <p
-      className="px-4 pt-3 pb-1 text-[10.5px] font-bold uppercase tracking-widest"
+      className="px-4 pt-4 pb-2 text-xs font-bold uppercase tracking-widest"
       style={{ color: 'var(--text-muted)' }}
     >
       {label}
@@ -816,11 +816,11 @@ function RoomItem({ room, active, presenceMap, onNavigate }) {
         <img
           src={room.avatarUrl}
           alt={room.name}
-          className="w-11 h-11 rounded-xl shrink-0 object-cover"
+          className="w-[52px] h-[52px] rounded-2xl shrink-0 object-cover"
         />
       ) : (
         <div
-          className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-[15px] font-bold"
+          className="w-[52px] h-[52px] rounded-2xl flex items-center justify-center shrink-0 text-[18px] font-bold"
           style={{
             background: active
               ? 'linear-gradient(135deg, var(--brand), var(--sea))'
@@ -829,8 +829,8 @@ function RoomItem({ room, active, presenceMap, onNavigate }) {
           }}
         >
           {room.isPrivate
-            ? <Lock size={16} style={{ color: active ? '#fff' : 'var(--text-muted)' }} />
-            : room.name?.charAt(0)?.toUpperCase() || <Hash size={16} />
+            ? <Lock size={20} style={{ color: active ? '#fff' : 'var(--text-muted)' }} />
+            : room.name?.charAt(0)?.toUpperCase() || <Hash size={20} />
           }
         </div>
       )}
@@ -839,20 +839,20 @@ function RoomItem({ room, active, presenceMap, onNavigate }) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-1">
           <p
-            className="text-[15px] font-semibold truncate"
+            className="text-[17px] font-semibold truncate"
             style={{ color: active ? 'var(--brand)' : 'var(--text-primary)' }}
           >
             {room.name}
           </p>
           <div className="flex items-center gap-1.5 shrink-0">
             {room.lastMessageAt && (
-              <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                 {formatRelativeTime(room.lastMessageAt)}
               </span>
             )}
             {room.unreadCount > 0 && (
               <span
-                className="text-[11px] font-bold min-w-[20px] h-[20px] rounded-full flex items-center justify-center px-1"
+                className="text-xs font-bold min-w-[22px] h-[22px] rounded-full flex items-center justify-center px-1.5"
                 style={{ background: 'var(--brand)', color: '#fff' }}
               >
                 {room.unreadCount > 99 ? '99+' : room.unreadCount}
@@ -860,15 +860,15 @@ function RoomItem({ room, active, presenceMap, onNavigate }) {
             )}
           </div>
         </div>
-        <div className="flex items-center gap-1.5 mt-0.5">
+        <div className="flex items-center gap-1.5 mt-1">
           {/* Online member count dot */}
           {onlineCount > 0 && (
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1.5">
               <span
-                className="inline-block w-1.5 h-1.5 rounded-full"
+                className="inline-block w-2 h-2 rounded-full"
                 style={{ background: 'var(--success)' }}
               />
-              <span className="text-[13px]" style={{ color: 'var(--text-muted)' }}>
+              <span className="text-[14px]" style={{ color: 'var(--text-muted)' }}>
                 {onlineCount} online
               </span>
             </span>
@@ -909,10 +909,10 @@ function DmItem({ contact, lastMsg, unread, status, lastSeenAt, active, onNaviga
     >
       {/* Avatar with presence dot */}
       <div className="relative shrink-0">
-        <Avatar user={contact} size={44} />
+        <Avatar user={contact} size={52} />
         {/* Presence dot */}
         <span
-          className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2"
+          className="absolute bottom-0 right-0 w-4 h-4 rounded-full border-[2.5px]"
           style={{
             background: statusColors[status] || statusColors.INVISIBLE,
             borderColor: 'var(--bg-secondary)',
@@ -924,7 +924,7 @@ function DmItem({ contact, lastMsg, unread, status, lastSeenAt, active, onNaviga
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-1">
           <p
-            className="text-[15px] font-semibold truncate"
+            className="text-[17px] font-semibold truncate"
             style={{ color: active ? 'var(--brand)' : 'var(--text-primary)' }}
           >
             {contact.fullName || contact.username}
@@ -932,7 +932,7 @@ function DmItem({ contact, lastMsg, unread, status, lastSeenAt, active, onNaviga
           <div className="flex items-center gap-1.5 shrink-0">
             {unread > 0 && (
               <span
-                className="text-[11px] font-bold min-w-[20px] h-[20px] rounded-full flex items-center justify-center px-1"
+                className="text-xs font-bold min-w-[22px] h-[22px] rounded-full flex items-center justify-center px-1.5"
                 style={{ background: 'var(--success)', color: '#fff' }}
               >
                 {unread}
@@ -940,7 +940,7 @@ function DmItem({ contact, lastMsg, unread, status, lastSeenAt, active, onNaviga
             )}
           </div>
         </div>
-        <p className="text-[13px] truncate mt-0.5" style={{ color: isOnline ? 'var(--success)' : 'var(--text-muted)' }}>
+        <p className="text-[14px] truncate mt-1" style={{ color: isOnline ? 'var(--success)' : 'var(--text-muted)' }}>
           {subtitle}
         </p>
       </div>

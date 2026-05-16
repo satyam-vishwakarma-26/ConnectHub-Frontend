@@ -13,7 +13,7 @@ const DELIVERY_ICONS = {
 }
 
 export default function MessageBubble({
-  message, onReact, onEdit, onDelete, onAdminDelete, onReply, onPin, canPin = false, canAdminDelete = false, showAvatar = true, onImageClick
+  message, onReact, onEdit, onDelete, onAdminDelete, onReply, onPin, canPin = false, canAdminDelete = false, showAvatar = true, onImageClick, themeConfig
 }) {
   const { user } = useAuthStore()
   const isOwn = user?.id != null && String(message.senderId) === String(user.id)
@@ -70,16 +70,18 @@ export default function MessageBubble({
       className={`flex items-end gap-3 mb-3 group ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}
     >
       {/* Avatar */}
-      {showAvatar && !isOwn ? (
-        <Avatar
-          user={{
-            username: message.senderName,
-            avatarUrl: message.senderAvatarUrl,
-          }}
-          size={30}
-        />
-      ) : (
-        <div style={{ width: 30 }} />
+      {!isOwn && (
+        showAvatar ? (
+          <Avatar
+            user={{
+              username: message.senderName,
+              avatarUrl: message.senderAvatarUrl,
+            }}
+            size={30}
+          />
+        ) : (
+          <div style={{ width: 30 }} className="shrink-0" />
+        )
       )}
 
       <div className={`flex flex-col ${isOwn ? 'items-end' : 'items-start'} max-w-[78%]`}>
@@ -151,8 +153,12 @@ export default function MessageBubble({
           {/* Text Bubble & Meta */}
           {hasText ? (
             <div
-              className={`max-w-full px-3 py-2 border ${isOwn ? 'msg-bubble-own' : 'msg-bubble-other'}`}
-              style={{ borderColor: isOwn ? 'rgba(255,255,255,0.08)' : 'var(--border)' }}
+              className={`max-w-full w-fit px-3 py-2 border ${isOwn ? 'msg-bubble-own shadow-sm' : 'msg-bubble-other'} ${isOwn && themeConfig?.id !== 'default' ? 'animate-gradient' : ''}`}
+              style={{ 
+                borderColor: isOwn ? 'rgba(255,255,255,0.08)' : 'var(--border)',
+                background: isOwn && themeConfig?.gradient ? themeConfig.gradient : undefined,
+                boxShadow: isOwn && themeConfig?.shadow ? `0 4px 15px ${themeConfig.shadow}` : undefined
+              }}
             >
               <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">
                 {message.content}
