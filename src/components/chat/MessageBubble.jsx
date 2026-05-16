@@ -35,7 +35,7 @@ export default function MessageBubble({
 
   const getDownloadUrl = (url) => {
     if (!url) return '';
-    if (url.includes('/raw/upload/')) return url;
+    if (message.type === 'FILE' || url.includes('/raw/upload/')) return url;
     return url.replace('/upload/', '/upload/fl_attachment/');
   };
 
