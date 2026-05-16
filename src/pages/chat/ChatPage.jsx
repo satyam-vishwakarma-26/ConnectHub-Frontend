@@ -74,6 +74,10 @@ export default function ChatPage() {
   const [roomEditLoading, setRoomEditLoading] = useState(false)
   const roomAvatarInputRef = useRef(null)
 
+  // DM Peer Profile
+  const [peerProfileOpen, setPeerProfileOpen] = useState(false)
+  const [fullScreenImage, setFullScreenImage] = useState(null)
+
   const describeError = useCallback((err) => {
     const s = err?.response?.status
     if (s) return `HTTP ${s}`
@@ -612,17 +616,23 @@ export default function ChatPage() {
 
             {/* Avatar / icon */}
             {isDirectChat ? (
-              <div className="relative">
-                <Avatar user={peer} size={36} />
-                {/* Presence dot */}
-                <span
-                  className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2"
-                  style={{
-                    background: STATUS_DOT_COLOR[peerStatus] || STATUS_DOT_COLOR.INVISIBLE,
-                    borderColor: 'var(--bg-secondary)',
-                  }}
-                />
-              </div>
+              <button
+                onClick={() => setPeerProfileOpen(true)}
+                className="shrink-0 cursor-pointer border-none bg-transparent p-0 transition-transform hover:scale-105"
+                title="User profile"
+              >
+                <div className="relative">
+                  <Avatar user={peer} size={36} />
+                  {/* Presence dot */}
+                  <span
+                    className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2"
+                    style={{
+                      background: STATUS_DOT_COLOR[peerStatus] || STATUS_DOT_COLOR.INVISIBLE,
+                      borderColor: 'var(--bg-secondary)',
+                    }}
+                  />
+                </div>
+              </button>
             ) : (
               <button
                 onClick={openRoomProfile}
@@ -652,9 +662,9 @@ export default function ChatPage() {
             {/* Name + sub-title */}
             <div>
               <h2
-                className={`font-semibold text-sm ${!isDirectChat ? 'cursor-pointer hover:underline' : ''}`}
+                className={`font-semibold text-sm cursor-pointer hover:underline`}
                 style={{ fontFamily: 'Syne, sans-serif', color: 'var(--text-primary)' }}
-                onClick={!isDirectChat ? openRoomProfile : undefined}
+                onClick={isDirectChat ? () => setPeerProfileOpen(true) : openRoomProfile}
               >
                 {isDirectChat
                   ? (peer?.fullName || peer?.username || `User ${directPeerId}`)
@@ -1304,6 +1314,72 @@ export default function ChatPage() {
           )}
         </div>
       </Modal>
+
+      {/* DM Peer Profile Modal */}
+      <Modal
+        open={isDirectChat && peerProfileOpen}
+        onClose={() => setPeerProfileOpen(false)}
+        title="User Profile"
+      >
+        <div className="space-y-4 flex flex-col items-center py-4">
+          <div 
+            className="cursor-pointer transition-transform hover:scale-105"
+            onClick={() => {
+              const imgUrl = peer?.avatarUrl || peer?.profileImageUrl
+              if (imgUrl) {
+                setFullScreenImage(imgUrl)
+              } else {
+                toast('No profile picture available', { icon: 'ℹ️' })
+              }
+            }}
+          >
+            <Avatar user={peer} size={112} className="shadow-lg" />
+            {!(peer?.avatarUrl || peer?.profileImageUrl) && (
+               <p className="text-[11px] text-center mt-2" style={{ color: 'var(--text-muted)' }}>
+                 No profile picture
+               </p>
+            )}
+          </div>
+          <div className="text-center pt-2">
+            <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
+              {peer?.fullName || peer?.username || `User ${directPeerId}`}
+            </h3>
+            {peer?.username && (
+              <p className="text-sm mt-1 font-medium" style={{ color: 'var(--text-muted)' }}>
+                @{peer.username}
+              </p>
+            )}
+            <p className="text-xs mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}>
+               <span
+                 className="inline-block w-2.5 h-2.5 rounded-full shadow-sm"
+                 style={{ background: STATUS_DOT_COLOR[peerStatus] || STATUS_DOT_COLOR.INVISIBLE }}
+               />
+               <span className="font-medium tracking-wide uppercase text-[10px]">{peerPresenceLabel}</span>
+            </p>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Full Screen Image Modal */}
+      {fullScreenImage && (
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-md cursor-zoom-out p-4 animate-in fade-in duration-200"
+          onClick={() => setFullScreenImage(null)}
+        >
+           <button 
+             className="absolute top-4 right-4 p-2.5 text-white hover:bg-white/20 bg-black/50 rounded-full backdrop-blur-md transition-colors"
+             onClick={(e) => { e.stopPropagation(); setFullScreenImage(null); }}
+           >
+             <X size={24} />
+           </button>
+           <img 
+             src={fullScreenImage} 
+             alt="Full screen profile" 
+             className="max-w-full max-h-full object-contain rounded-xl shadow-2xl animate-in zoom-in-95 duration-200"
+             onClick={(e) => e.stopPropagation()}
+           />
+        </div>
+      )}
     </div>
   )
 }
