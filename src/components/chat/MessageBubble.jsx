@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { MoreHorizontal, Edit3, Trash2, Reply, Check, CheckCheck, ShieldAlert } from 'lucide-react'
+import { MoreHorizontal, Edit3, Trash2, Reply, Check, CheckCheck, ShieldAlert, Download, FileText } from 'lucide-react'
 import Avatar from '../ui/Avatar'
 import { formatMessageTime, formatFullTime } from '../../utils/helpers'
 import { useAuthStore } from '../../context/authStore'
@@ -89,15 +89,41 @@ export default function MessageBubble({
           >
             {/* Image */}
             {isImageMessage && message.mediaUrl && (
-              <img src={message.mediaUrl} alt="attachment"
-                   className="rounded-xl mb-2 max-w-full max-h-64 object-cover" />
+              <div className="relative group/image mb-2 flex justify-start">
+                <img src={message.mediaUrl} alt="attachment"
+                     className="rounded-xl max-w-[240px] sm:max-w-xs md:max-w-md max-h-64 object-contain bg-black/5" />
+                <a 
+                  href={message.mediaUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  download={`image-${message.id}`}
+                  className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/60 text-white opacity-0 group-hover/image:opacity-100 transition-opacity hover:bg-black/80 backdrop-blur-sm"
+                  title="Download Image"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Download size={16} />
+                </a>
+              </div>
             )}
 
             {/* File */}
             {message.type === 'FILE' && message.mediaUrl && !isImageMessage && (
-              <a href={message.mediaUrl} target="_blank" rel="noopener noreferrer"
-                 className="flex items-center gap-2 text-sm underline mb-2">
-                📎 Download file
+              <a href={message.mediaUrl} target="_blank" rel="noopener noreferrer" download={`file-${message.id}`}
+                 className="flex items-center gap-3 p-3 rounded-xl mb-2 hover:opacity-80 transition-opacity no-underline"
+                 style={{ background: isOwn ? 'rgba(0,0,0,0.1)' : 'var(--bg-tertiary)' }}
+                 onClick={(e) => e.stopPropagation()}>
+                <div className="p-2 rounded-lg" style={{ background: isOwn ? 'rgba(255,255,255,0.15)' : 'var(--bg-secondary)' }}>
+                  <FileText size={20} />
+                </div>
+                <div className="flex-1 min-w-0 pr-2">
+                  <p className="text-sm font-medium truncate" style={{ color: isOwn ? '#fff' : 'var(--text-primary)' }}>
+                    Document / File
+                  </p>
+                  <p className="text-[10px] opacity-70 mt-0.5">Click to download</p>
+                </div>
+                <div className="p-1.5 rounded-full" style={{ background: isOwn ? 'rgba(255,255,255,0.2)' : 'var(--bg-secondary)' }}>
+                  <Download size={14} />
+                </div>
               </a>
             )}
 
