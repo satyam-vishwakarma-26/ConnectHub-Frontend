@@ -41,10 +41,10 @@ export const CHAT_THEMES = [
 
 export const PAGE_BACKGROUNDS = [
   { id: 'default', name: 'Default Dark', style: undefined },
-  { id: 'abyss', name: 'The Abyss', style: 'linear-gradient(to bottom, #000000, #0a0a14)' },
-  { id: 'nebula', name: 'Nebula', style: 'radial-gradient(circle at top right, rgba(126,34,206,0.1), transparent 50%), radial-gradient(circle at bottom left, rgba(13,148,136,0.1), transparent 50%)' },
-  { id: 'aurora', name: 'Aurora', style: 'radial-gradient(ellipse at top, rgba(16,185,129,0.08), transparent 50%), radial-gradient(ellipse at bottom, rgba(59,130,246,0.08), transparent 50%)' },
-  { id: 'crimson', name: 'Crimson Night', style: 'radial-gradient(circle at center, rgba(225,29,72,0.06), transparent 80%)' },
+  { id: 'sunset', name: 'Sunset Vibe', style: 'linear-gradient(135deg, #9a3412, #831843)' },
+  { id: 'ocean', name: 'Ocean Depth', style: 'linear-gradient(135deg, #115e59, #1e3a8a)' },
+  { id: 'forest', name: 'Forest Core', style: 'linear-gradient(135deg, #065f46, #064e3b)' },
+  { id: 'midnight', name: 'Midnight Glow', style: 'linear-gradient(135deg, #312e81, #581c87)' },
 ]
 
 export default function ChatPage() {
