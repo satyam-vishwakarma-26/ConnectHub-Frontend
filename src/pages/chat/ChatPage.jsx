@@ -123,10 +123,10 @@ export default function ChatPage() {
 
     // Ensure a DM room exists in the backend so this conversation
     // persists across page refreshes (getMyRooms will return it).
-    if (directPeerId !== user.id) {
+    if (directPeerId !== user?.id) {
       roomApiService.getOrCreateDm(directPeerId).catch(() => {})
     }
-  }, [isDirectChat, directPeerId, user.id])
+  }, [isDirectChat, directPeerId, user?.id])
 
   // ── Fetch room data, members, presence ────────────────
   useEffect(() => {

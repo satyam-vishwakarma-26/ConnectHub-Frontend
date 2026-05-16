@@ -33,6 +33,12 @@ export default function MessageBubble({
 
   const hasText = Boolean(message.content && message.content.trim().length > 0);
 
+  const getDownloadUrl = (url) => {
+    if (!url) return '';
+    if (url.includes('/raw/upload/')) return url;
+    return url.replace('/upload/', '/upload/fl_attachment/');
+  };
+
   if (message.isDeleted) {
     return (
       <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'} mb-2`}>
@@ -97,7 +103,7 @@ export default function MessageBubble({
                      className="rounded-xl max-w-[240px] sm:max-w-xs md:max-w-md max-h-64 object-contain cursor-pointer transition-transform hover:scale-[1.02]" 
                      style={{ background: !hasText ? 'transparent' : 'rgba(0,0,0,0.05)' }} />
                 <a 
-                  href={message.mediaUrl?.replace('/upload/', '/upload/fl_attachment/')} 
+                  href={getDownloadUrl(message.mediaUrl)} 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   download={`image-${message.id}`}
@@ -112,7 +118,7 @@ export default function MessageBubble({
 
             {/* File */}
             {message.type === 'FILE' && message.mediaUrl && !isImageMessage && (
-              <a href={message.mediaUrl?.replace('/upload/', '/upload/fl_attachment/')} target="_blank" rel="noopener noreferrer" download={`file-${message.id}`}
+              <a href={getDownloadUrl(message.mediaUrl)} target="_blank" rel="noopener noreferrer" download={`file-${message.id}`}
                  className={`flex items-center gap-3 p-3 rounded-xl hover:opacity-80 transition-opacity no-underline ${!hasText ? (isOwn ? 'msg-bubble-own border' : 'msg-bubble-other border') : 'mb-2'}`}
                  style={{ 
                    background: hasText ? (isOwn ? 'rgba(0,0,0,0.1)' : 'var(--bg-tertiary)') : undefined,
