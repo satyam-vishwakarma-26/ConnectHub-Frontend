@@ -84,14 +84,15 @@ export default function MessageBubble({
         {/* Bubble */}
         <div className="relative">
           <div
-            className={`${isOwn ? 'msg-bubble-own' : 'msg-bubble-other'} px-3 py-2 max-w-full border`}
-            style={{ borderColor: isOwn ? 'rgba(255,255,255,0.08)' : 'var(--border)' }}
+            className={`max-w-full ${message.content ? (isOwn ? 'msg-bubble-own px-3 py-2 border' : 'msg-bubble-other px-3 py-2 border') : ''}`}
+            style={{ borderColor: message.content ? (isOwn ? 'rgba(255,255,255,0.08)' : 'var(--border)') : 'transparent' }}
           >
             {/* Image */}
             {isImageMessage && message.mediaUrl && (
-              <div className="relative group/image mb-2 flex justify-start">
+              <div className={`relative group/image flex justify-start ${message.content ? 'mb-2' : ''}`}>
                 <img src={message.mediaUrl} alt="attachment"
-                     className="rounded-xl max-w-[240px] sm:max-w-xs md:max-w-md max-h-64 object-contain bg-black/5" />
+                     className="rounded-xl max-w-[240px] sm:max-w-xs md:max-w-md max-h-64 object-contain" 
+                     style={{ background: !message.content ? 'transparent' : 'rgba(0,0,0,0.05)' }} />
                 <a 
                   href={message.mediaUrl} 
                   target="_blank" 
@@ -109,8 +110,11 @@ export default function MessageBubble({
             {/* File */}
             {message.type === 'FILE' && message.mediaUrl && !isImageMessage && (
               <a href={message.mediaUrl} target="_blank" rel="noopener noreferrer" download={`file-${message.id}`}
-                 className="flex items-center gap-3 p-3 rounded-xl mb-2 hover:opacity-80 transition-opacity no-underline"
-                 style={{ background: isOwn ? 'rgba(0,0,0,0.1)' : 'var(--bg-tertiary)' }}
+                 className={`flex items-center gap-3 p-3 rounded-xl hover:opacity-80 transition-opacity no-underline ${!message.content ? (isOwn ? 'msg-bubble-own border' : 'msg-bubble-other border') : 'mb-2'}`}
+                 style={{ 
+                   background: message.content ? (isOwn ? 'rgba(0,0,0,0.1)' : 'var(--bg-tertiary)') : undefined,
+                   borderColor: !message.content ? (isOwn ? 'rgba(255,255,255,0.08)' : 'var(--border)') : 'transparent'
+                 }}
                  onClick={(e) => e.stopPropagation()}>
                 <div className="p-2 rounded-lg" style={{ background: isOwn ? 'rgba(255,255,255,0.15)' : 'var(--bg-secondary)' }}>
                   <FileText size={20} />
@@ -135,8 +139,8 @@ export default function MessageBubble({
             )}
 
             {/* Meta row */}
-            <div className={`flex items-center gap-1.5 mt-2 ${isOwn ? 'justify-end' : 'justify-start'}`}>
-              <span className="text-[11px] opacity-70">
+            <div className={`flex items-center gap-1.5 ${message.content ? 'mt-2' : 'mt-1.5'} ${isOwn ? 'justify-end' : 'justify-start'}`}>
+              <span className="text-[11px] opacity-70" style={{ color: !message.content ? 'var(--text-muted)' : 'inherit' }}>
                 {formatMessageTime(message.sentAt)}
                 {message.isEdited && ' · edited'}
               </span>
