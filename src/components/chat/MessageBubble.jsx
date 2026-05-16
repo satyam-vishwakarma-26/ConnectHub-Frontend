@@ -94,7 +94,7 @@ export default function MessageBubble({
                      className="rounded-xl max-w-[240px] sm:max-w-xs md:max-w-md max-h-64 object-contain" 
                      style={{ background: !message.content ? 'transparent' : 'rgba(0,0,0,0.05)' }} />
                 <a 
-                  href={message.mediaUrl} 
+                  href={message.mediaUrl?.replace('/upload/', '/upload/fl_attachment/')} 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   download={`image-${message.id}`}
@@ -109,7 +109,7 @@ export default function MessageBubble({
 
             {/* File */}
             {message.type === 'FILE' && message.mediaUrl && !isImageMessage && (
-              <a href={message.mediaUrl} target="_blank" rel="noopener noreferrer" download={`file-${message.id}`}
+              <a href={message.mediaUrl?.replace('/upload/', '/upload/fl_attachment/')} target="_blank" rel="noopener noreferrer" download={`file-${message.id}`}
                  className={`flex items-center gap-3 p-3 rounded-xl hover:opacity-80 transition-opacity no-underline ${!message.content ? (isOwn ? 'msg-bubble-own border' : 'msg-bubble-other border') : 'mb-2'}`}
                  style={{ 
                    background: message.content ? (isOwn ? 'rgba(0,0,0,0.1)' : 'var(--bg-tertiary)') : undefined,
