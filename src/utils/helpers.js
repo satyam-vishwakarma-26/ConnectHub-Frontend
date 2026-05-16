@@ -1,5 +1,5 @@
 import { clsx } from 'clsx'
-import { formatDistanceToNow, format, isToday, isYesterday } from 'date-fns'
+import { formatDistanceToNow, format, isToday, isYesterday, differenceInHours } from 'date-fns'
 
 // ── Class name helper ─────────────────────────────────────
 export { clsx as cn }
@@ -29,10 +29,24 @@ export function getAvatarGradient(str = '') {
 // toUtcDate() appends 'Z' only when there is no timezone info present.
 function toUtcDate(dateStr) {
   if (!dateStr) return null
-  if (dateStr.endsWith('Z') || /[+-]\d{2}:\d{2}$/.test(dateStr)) {
-    return new Date(dateStr)  // already has timezone info
+
+  // Handle Java Jackson LocalDateTime array format: [year, month, day, hour, min, sec]
+  if (Array.isArray(dateStr)) {
+    const [y, m, d, h = 0, min = 0, s = 0] = dateStr
+    // JavaScript months are 0-indexed. Treat the extracted time as UTC.
+    return new Date(Date.UTC(y, m - 1, d, h, min, s))
   }
-  return new Date(dateStr + 'Z')  // treat bare timestamp as UTC
+
+  // Handle strings
+  if (typeof dateStr === 'string') {
+    if (dateStr.endsWith('Z') || /[+-]\d{2}:\d{2}$/.test(dateStr)) {
+      return new Date(dateStr)  // already has timezone info
+    }
+    return new Date(dateStr + 'Z')  // treat bare timestamp as UTC
+  }
+
+  // Fallback for Numbers or Date objects
+  return new Date(dateStr)
 }
 
 export function formatMessageTime(dateStr) {
@@ -58,6 +72,19 @@ export function formatFullTime(dateStr) {
 export function timeAgo(dateStr) {
   const d = toUtcDate(dateStr)
   if (!d || isNaN(d)) return ''
+  
+  const hoursDiff = Math.abs(differenceInHours(new Date(), d))
+  
+  if (hoursDiff < 24) {
+    if (isToday(d)) {
+      return `Today at ${format(d, 'HH:mm')}`
+    } else if (isYesterday(d)) {
+      return `Yesterday at ${format(d, 'HH:mm')}`
+    }
+    return format(d, 'HH:mm')
+  }
+  
+  // E.g., "2 days ago"
   return formatDistanceToNow(d, { addSuffix: true })
 }
 
