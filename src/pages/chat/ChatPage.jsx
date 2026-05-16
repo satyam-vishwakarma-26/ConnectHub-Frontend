@@ -99,6 +99,7 @@ export default function ChatPage() {
   const [activeBgTheme, setActiveBgTheme] = useState('default')
   const [themeSelectorOpen, setThemeSelectorOpen] = useState(false)
   const [customizingType, setCustomizingType] = useState('message') // 'message' | 'background'
+  const [dmRoomId, setDmRoomId] = useState(null)
 
   const describeError = useCallback((err) => {
     const s = err?.response?.status
@@ -126,10 +127,14 @@ export default function ChatPage() {
   useEffect(() => {
     if (isDirectChat && directPeerId) {
       markChatAsRead(null, directPeerId)
+      if (dmRoomId) {
+        roomApiService.updateLastRead(dmRoomId, { readAt: new Date().toISOString() }).catch(() => {})
+      }
     } else if (!isDirectChat && activeRoomId) {
       markChatAsRead(activeRoomId, null)
+      roomApiService.updateLastRead(activeRoomId, { readAt: new Date().toISOString() }).catch(() => {})
     }
-  }, [isDirectChat, activeRoomId, directPeerId, messages, markChatAsRead])
+  }, [isDirectChat, activeRoomId, directPeerId, messages, markChatAsRead, dmRoomId])
 
   // ── Load DM peer profile + ensure DM room exists ────────
   useEffect(() => {
@@ -146,7 +151,9 @@ export default function ChatPage() {
     // Ensure a DM room exists in the backend so this conversation
     // persists across page refreshes (getMyRooms will return it).
     if (directPeerId !== user?.id) {
-      roomApiService.getOrCreateDm(directPeerId).catch(() => {})
+      roomApiService.getOrCreateDm(directPeerId).then(res => {
+        if (res.data?.data?.id) setDmRoomId(res.data.data.id)
+      }).catch(() => {})
     }
   }, [isDirectChat, directPeerId, user?.id])
 
@@ -201,8 +208,7 @@ export default function ChatPage() {
 
       if (failures.length) toast.error(`Failed to load: ${failures.join(', ')}`)
 
-      // Best-effort read receipt
-      roomApiService.updateLastRead(activeRoomId, { readAt: new Date().toISOString() }).catch(() => {})
+      // Read receipt is handled by the messages useEffect
     }
 
     load()
