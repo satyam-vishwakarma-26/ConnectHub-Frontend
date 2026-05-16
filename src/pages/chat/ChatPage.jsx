@@ -1224,49 +1224,54 @@ export default function ChatPage() {
 
           {/* Avatar section */}
           <div className="flex flex-col items-center">
-            <div
-              className="relative group cursor-pointer"
-              onClick={isAdmin ? () => roomAvatarInputRef.current?.click() : undefined}
-            >
-              {roomAvatarPreview ? (
-                <img
-                  src={roomAvatarPreview}
-                  alt="Room avatar"
-                  className="w-24 h-24 rounded-2xl object-cover shadow-lg"
-                />
-              ) : (
-                <div
-                  className="w-24 h-24 rounded-2xl flex items-center justify-center text-3xl font-bold shadow-lg"
-                  style={{
-                    background: 'linear-gradient(135deg, var(--brand), var(--sea))',
-                    color: '#fff',
-                  }}
-                >
-                  {room?.name?.charAt(0)?.toUpperCase() || '#'}
-                </div>
-              )}
+            <div className="relative">
+              <div
+                className="relative group cursor-pointer transition-transform hover:scale-105"
+                onClick={() => {
+                  const img = roomAvatarPreview || room?.avatarUrl;
+                  if (img) setFullScreenImage(img);
+                  else toast('No group photo available', { icon: 'ℹ️' });
+                }}
+              >
+                {roomAvatarPreview || room?.avatarUrl ? (
+                  <img
+                    src={roomAvatarPreview || room?.avatarUrl}
+                    alt="Room avatar"
+                    className="w-24 h-24 rounded-2xl object-cover shadow-lg"
+                  />
+                ) : (
+                  <div
+                    className="w-24 h-24 rounded-2xl flex items-center justify-center text-3xl font-bold shadow-lg"
+                    style={{
+                      background: 'linear-gradient(135deg, var(--brand), var(--sea))',
+                      color: '#fff',
+                    }}
+                  >
+                    {room?.name?.charAt(0)?.toUpperCase() || '#'}
+                  </div>
+                )}
+              </div>
+              
               {isAdmin && (
-                <div
-                  className="absolute inset-0 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  style={{ background: 'rgba(0,0,0,0.45)' }}
+                <button
+                  onClick={() => roomAvatarInputRef.current?.click()}
+                  className="absolute -bottom-2 -right-2 p-2 rounded-full shadow-lg hover:scale-110 transition-transform"
+                  style={{ background: 'var(--brand)', color: '#fff' }}
+                  title="Change group photo"
                 >
-                  <Camera size={24} style={{ color: '#fff' }} />
-                </div>
+                  <Camera size={14} />
+                </button>
               )}
             </div>
+
             {isAdmin && (
-              <>
-                <input
-                  ref={roomAvatarInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleAvatarFileChange}
-                />
-                <p className="text-[11px] mt-2" style={{ color: 'var(--text-muted)' }}>
-                  Click to change group photo
-                </p>
-              </>
+              <input
+                ref={roomAvatarInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarFileChange}
+              />
             )}
           </div>
 
@@ -1375,6 +1380,23 @@ export default function ChatPage() {
               </button>
             </div>
           )}
+
+          {/* Chat Theme Option for Room */}
+          <div className="w-full pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
+            <button
+              onClick={() => { setRoomProfileOpen(false); setThemeSelectorOpen(true); }}
+              className="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-colors hover:opacity-80"
+              style={{ background: 'var(--bg-tertiary)' }}
+            >
+              <div className="flex items-center gap-3" style={{ color: 'var(--text-primary)' }}>
+                <div className="p-2 rounded-lg" style={{ background: 'var(--brand-light)', color: 'var(--brand)' }}>
+                  <Palette size={18} />
+                </div>
+                <span className="font-medium text-sm">Customize Chat</span>
+              </div>
+              <div className="w-6 h-6 rounded-full shadow-sm" style={{ background: (CHAT_THEMES.find(t => t.id === activeMsgTheme) || CHAT_THEMES[0]).gradient }} />
+            </button>
+          </div>
         </div>
       </Modal>
 
@@ -1433,7 +1455,7 @@ export default function ChatPage() {
                 </div>
                 <span className="font-medium text-sm">Chat Theme</span>
               </div>
-              <div className="w-6 h-6 rounded-full shadow-sm" style={{ background: (CHAT_THEMES.find(t => t.id === activeTheme) || CHAT_THEMES[0]).gradient }} />
+              <div className="w-6 h-6 rounded-full shadow-sm" style={{ background: (CHAT_THEMES.find(t => t.id === activeMsgTheme) || CHAT_THEMES[0]).gradient }} />
             </button>
           </div>
         </div>
