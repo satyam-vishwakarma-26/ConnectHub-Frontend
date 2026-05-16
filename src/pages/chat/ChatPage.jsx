@@ -39,6 +39,14 @@ export const CHAT_THEMES = [
   { id: 'midnight', name: 'Midnight Purple', gradient: 'linear-gradient(135deg, #312e81, #7e22ce)', shadow: 'rgba(126, 34, 206, 0.3)' },
 ]
 
+export const PAGE_BACKGROUNDS = [
+  { id: 'default', name: 'Default Dark', style: undefined },
+  { id: 'abyss', name: 'The Abyss', style: 'linear-gradient(to bottom, #000000, #0a0a14)' },
+  { id: 'nebula', name: 'Nebula', style: 'radial-gradient(circle at top right, rgba(126,34,206,0.1), transparent 50%), radial-gradient(circle at bottom left, rgba(13,148,136,0.1), transparent 50%)' },
+  { id: 'aurora', name: 'Aurora', style: 'radial-gradient(ellipse at top, rgba(16,185,129,0.08), transparent 50%), radial-gradient(ellipse at bottom, rgba(59,130,246,0.08), transparent 50%)' },
+  { id: 'crimson', name: 'Crimson Night', style: 'radial-gradient(circle at center, rgba(225,29,72,0.06), transparent 80%)' },
+]
+
 export default function ChatPage() {
   const { roomId, userId } = useParams()
   const navigate           = useNavigate()
@@ -87,8 +95,10 @@ export default function ChatPage() {
   const [fullScreenImage, setFullScreenImage] = useState(null)
 
   // Chat Theme
-  const [activeTheme, setActiveTheme] = useState('default')
+  const [activeMsgTheme, setActiveMsgTheme] = useState('default')
+  const [activeBgTheme, setActiveBgTheme] = useState('default')
   const [themeSelectorOpen, setThemeSelectorOpen] = useState(false)
+  const [customizingType, setCustomizingType] = useState('message') // 'message' | 'background'
 
   const describeError = useCallback((err) => {
     const s = err?.response?.status
@@ -200,18 +210,26 @@ export default function ChatPage() {
 
   // Load Theme
   useEffect(() => {
-    const key = activeRoomId ? `chat_theme_room_${activeRoomId}` : (directPeerId ? `chat_theme_dm_${directPeerId}` : null)
-    if (key) {
-      setActiveTheme(localStorage.getItem(key) || 'default')
+    const keyMsg = activeRoomId ? `chat_theme_msg_room_${activeRoomId}` : (directPeerId ? `chat_theme_msg_dm_${directPeerId}` : null)
+    const keyBg = activeRoomId ? `chat_theme_bg_room_${activeRoomId}` : (directPeerId ? `chat_theme_bg_dm_${directPeerId}` : null)
+    if (keyMsg) {
+      setActiveMsgTheme(localStorage.getItem(keyMsg) || 'default')
+    }
+    if (keyBg) {
+      setActiveBgTheme(localStorage.getItem(keyBg) || 'default')
     }
   }, [activeRoomId, directPeerId])
 
-  const handleThemeChange = (themeId) => {
-    setActiveTheme(themeId)
-    const key = activeRoomId ? `chat_theme_room_${activeRoomId}` : (directPeerId ? `chat_theme_dm_${directPeerId}` : null)
-    if (key) {
-      localStorage.setItem(key, themeId)
-    }
+  const handleMsgThemeChange = (themeId) => {
+    setActiveMsgTheme(themeId)
+    const key = activeRoomId ? `chat_theme_msg_room_${activeRoomId}` : (directPeerId ? `chat_theme_msg_dm_${directPeerId}` : null)
+    if (key) localStorage.setItem(key, themeId)
+  }
+
+  const handleBgThemeChange = (themeId) => {
+    setActiveBgTheme(themeId)
+    const key = activeRoomId ? `chat_theme_bg_room_${activeRoomId}` : (directPeerId ? `chat_theme_bg_dm_${directPeerId}` : null)
+    if (key) localStorage.setItem(key, themeId)
   }
 
   // ── Real-time presence via WebSocket ─────────────────
@@ -805,8 +823,8 @@ export default function ChatPage() {
             display: 'flex', 
             flexDirection: 'column', 
             gap: 2,
-            background: (CHAT_THEMES.find(t => t.id === activeTheme) || CHAT_THEMES[0]).id !== 'default' 
-              ? (CHAT_THEMES.find(t => t.id === activeTheme) || CHAT_THEMES[0]).background 
+            background: (PAGE_BACKGROUNDS.find(t => t.id === activeBgTheme) || PAGE_BACKGROUNDS[0]).id !== 'default' 
+              ? (PAGE_BACKGROUNDS.find(t => t.id === activeBgTheme) || PAGE_BACKGROUNDS[0]).style 
               : undefined
           }}
         >
@@ -866,7 +884,7 @@ export default function ChatPage() {
                 canAdminDelete={!isDirectChat && isAdmin}
                 isSenderAdmin={msgSenderIsAdmin}
                 onImageClick={setFullScreenImage}
-                themeConfig={CHAT_THEMES.find(t => t.id === activeTheme) || CHAT_THEMES[0]}
+                themeConfig={CHAT_THEMES.find(t => t.id === activeMsgTheme) || CHAT_THEMES[0]}
               />
             )
           })}
@@ -1425,31 +1443,74 @@ export default function ChatPage() {
       <Modal
         open={themeSelectorOpen}
         onClose={() => setThemeSelectorOpen(false)}
-        title="Choose Theme"
+        title="Customize Chat"
       >
-        <div className="grid grid-cols-2 gap-3 py-2">
-          {CHAT_THEMES.map(t => (
-            <button
-              key={t.id}
-              onClick={() => handleThemeChange(t.id)}
-              className="flex flex-col items-center gap-3 p-4 rounded-2xl transition-all border-2"
-              style={{ 
-                borderColor: activeTheme === t.id ? 'var(--brand)' : 'var(--border)',
-                background: activeTheme === t.id ? 'var(--bg-hover)' : 'var(--bg-tertiary)'
-              }}
-            >
-              <div 
-                className="w-16 h-16 rounded-full shadow-lg flex items-center justify-center animate-gradient"
-                style={{ background: t.gradient, backgroundSize: '200% 200%' }}
-              >
-                {activeTheme === t.id && <CheckCircle2 size={24} color="#fff" />}
-              </div>
-              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                {t.name}
-              </span>
-            </button>
-          ))}
+        <div className="flex gap-2 mb-4 border-b pb-2" style={{ borderColor: 'var(--border)' }}>
+          <button 
+            onClick={() => setCustomizingType('message')} 
+            className={`flex-1 pb-1 font-semibold text-sm border-b-2 transition-colors ${customizingType === 'message' ? 'text-brand border-brand' : 'text-muted border-transparent hover:text-primary'}`}
+            style={customizingType === 'message' ? { color: 'var(--brand)', borderColor: 'var(--brand)' } : { color: 'var(--text-muted)' }}
+          >
+            Message Bubbles
+          </button>
+          <button 
+            onClick={() => setCustomizingType('background')} 
+            className={`flex-1 pb-1 font-semibold text-sm border-b-2 transition-colors ${customizingType === 'background' ? 'text-brand border-brand' : 'text-muted border-transparent hover:text-primary'}`}
+            style={customizingType === 'background' ? { color: 'var(--brand)', borderColor: 'var(--brand)' } : { color: 'var(--text-muted)' }}
+          >
+            Chat Background
+          </button>
         </div>
+
+        {customizingType === 'message' ? (
+          <div className="grid grid-cols-2 gap-3 py-2">
+            {CHAT_THEMES.map(t => (
+              <button
+                key={t.id}
+                onClick={() => handleMsgThemeChange(t.id)}
+                className="flex flex-col items-center gap-3 p-4 rounded-2xl transition-all border-2"
+                style={{ 
+                  borderColor: activeMsgTheme === t.id ? 'var(--brand)' : 'var(--border)',
+                  background: activeMsgTheme === t.id ? 'var(--bg-hover)' : 'var(--bg-tertiary)'
+                }}
+              >
+                <div 
+                  className="w-16 h-16 rounded-full shadow-lg flex items-center justify-center animate-gradient"
+                  style={{ background: t.gradient, backgroundSize: '200% 200%' }}
+                >
+                  {activeMsgTheme === t.id && <CheckCircle2 size={24} color="#fff" />}
+                </div>
+                <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  {t.name}
+                </span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3 py-2">
+            {PAGE_BACKGROUNDS.map(t => (
+              <button
+                key={t.id}
+                onClick={() => handleBgThemeChange(t.id)}
+                className="flex flex-col items-center gap-3 p-4 rounded-2xl transition-all border-2"
+                style={{ 
+                  borderColor: activeBgTheme === t.id ? 'var(--brand)' : 'var(--border)',
+                  background: activeBgTheme === t.id ? 'var(--bg-hover)' : 'var(--bg-tertiary)'
+                }}
+              >
+                <div 
+                  className="w-16 h-16 rounded-full shadow-lg flex items-center justify-center border"
+                  style={{ background: t.id === 'default' ? 'var(--bg-secondary)' : t.style, borderColor: 'rgba(255,255,255,0.1)' }}
+                >
+                  {activeBgTheme === t.id && <CheckCircle2 size={24} color="#fff" />}
+                </div>
+                <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  {t.name}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
       </Modal>
 
       {/* Full Screen Image Modal */}
