@@ -130,19 +130,19 @@ export default function MessageBubble({
           {/* File */}
           {message.type === 'FILE' && message.mediaUrl && !isImageMessage && (
             <a href={getDownloadUrl(message.mediaUrl)} target="_blank" rel="noopener noreferrer" download={`file-${message.id}`}
-               className={`flex items-center gap-3 p-3 rounded-xl hover:opacity-80 transition-opacity no-underline ${isOwn ? 'msg-bubble-own border' : 'msg-bubble-other border'}`}
+               className={`flex items-center gap-3 p-3 rounded-xl hover:opacity-80 transition-opacity no-underline w-[260px] sm:w-[320px] max-w-full ${isOwn ? 'msg-bubble-own border' : 'msg-bubble-other border'}`}
                style={{ borderColor: isOwn ? 'rgba(255,255,255,0.08)' : 'var(--border)' }}
                onClick={(e) => e.stopPropagation()}>
-              <div className="p-2 rounded-lg" style={{ background: isOwn ? 'rgba(255,255,255,0.15)' : 'var(--bg-secondary)' }}>
+              <div className="p-2 rounded-lg shrink-0" style={{ background: isOwn ? 'rgba(255,255,255,0.15)' : 'var(--bg-secondary)' }}>
                 <FileText size={20} />
               </div>
-              <div className="flex-1 min-w-0 pr-2">
-                <p className="text-sm font-medium truncate" style={{ color: isOwn ? '#fff' : 'var(--text-primary)' }} title={getFileName(message.mediaUrl)}>
+              <div className="flex-1 min-w-0 pr-1">
+                <p className="text-sm font-medium truncate block" style={{ color: isOwn ? '#fff' : 'var(--text-primary)' }} title={getFileName(message.mediaUrl)}>
                   {getFileName(message.mediaUrl)}
                 </p>
-                <p className="text-[10px] opacity-70 mt-0.5">Click to download</p>
+                <p className="text-[10px] opacity-70 mt-0.5 truncate block">PDF Document</p>
               </div>
-              <div className="p-1.5 rounded-full" style={{ background: isOwn ? 'rgba(255,255,255,0.2)' : 'var(--bg-secondary)' }}>
+              <div className="p-1.5 rounded-full shrink-0" style={{ background: isOwn ? 'rgba(255,255,255,0.2)' : 'var(--bg-secondary)' }}>
                 <Download size={14} />
               </div>
             </a>
