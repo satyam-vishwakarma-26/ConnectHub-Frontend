@@ -146,6 +146,7 @@ export default function ChatLayout() {
 
       if (peerId && Number.isFinite(peerId) && peerId !== myId) {
         participantMap.set(peerId, {
+          roomId: room.id,
           lastMessageAt: room.lastMessageAt || room.createdAt,
           unreadCount: room.unreadCount || 0
         })
@@ -171,6 +172,7 @@ export default function ChatLayout() {
           const uid = Number(m.userId)
           if (Number.isFinite(uid) && uid !== myId) {
             participantMap.set(uid, {
+              roomId: room.id,
               lastMessageAt: room.lastMessageAt || room.createdAt,
               unreadCount: room.unreadCount || 0
             })
@@ -193,6 +195,7 @@ export default function ChatLayout() {
         .map(profile => {
           const roomData = participantMap.get(Number(profile.id)) || {}
           return {
+            roomId: roomData.roomId,
             user: profile,
             lastMsg: null,
             unread: roomData.unreadCount || 0,
@@ -233,6 +236,32 @@ export default function ChatLayout() {
   useEffect(() => {
     loadRooms()
   }, [loadRooms])
+
+  // ── Clear unread counts and update API when viewing chat ────────
+  useEffect(() => {
+    if (userId) {
+      setDmContacts(prev => prev.map(d => {
+        if (String(d.user.id) === String(userId)) {
+          if (d.unread > 0 && d.roomId) {
+            roomApiService.updateLastRead(d.roomId, { readAt: new Date().toISOString() }).catch(() => {})
+          }
+          return { ...d, unread: 0 }
+        }
+        return d
+      }))
+    }
+    if (roomId) {
+      setRooms(prev => prev.map(r => {
+        if (String(r.id) === String(roomId)) {
+          if (r.unreadCount > 0) {
+            roomApiService.updateLastRead(r.id, { readAt: new Date().toISOString() }).catch(() => {})
+          }
+          return { ...r, unreadCount: 0 }
+        }
+        return r
+      }))
+    }
+  }, [roomId, userId])
 
   useEffect(() => {
     // Refresh presence every 30 seconds as a fallback
@@ -425,31 +454,31 @@ export default function ChatLayout() {
               <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase ml-1" style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: 'white', letterSpacing: '0.05em' }}>PRO</span>
             )}
           </span>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <NotificationBell />
             <button
               onClick={() => setNewDmOpen(true)}
-              className="p-1.5 rounded-lg transition-colors hover:opacity-70"
+              className="p-2 rounded-xl transition-colors hover:opacity-70"
               style={{ color: 'var(--text-secondary)', background: 'var(--bg-tertiary)' }}
               title="New direct message"
             >
-              <MessageCircle size={15} />
+              <MessageCircle size={18} />
             </button>
             <button
               onClick={() => setJoinOpen(true)}
-              className="p-1.5 rounded-lg transition-colors hover:opacity-70"
+              className="p-2 rounded-xl transition-colors hover:opacity-70"
               style={{ color: 'var(--text-secondary)', background: 'var(--bg-tertiary)' }}
               title="Join room by invite"
             >
-              <UserPlus size={15} />
+              <UserPlus size={18} />
             </button>
             <button
               onClick={() => setCreateOpen(true)}
-              className="p-1.5 rounded-lg transition-colors hover:opacity-70"
+              className="p-2 rounded-xl transition-colors hover:opacity-70 shadow-sm hover:shadow-md"
               style={{ color: 'var(--brand)', background: 'var(--brand-light)' }}
               title="Create new room"
             >
-              <Plus size={15} />
+              <Plus size={18} />
             </button>
             <button
               onClick={() => {
