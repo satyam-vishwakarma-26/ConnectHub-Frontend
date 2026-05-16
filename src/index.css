@@ -91,8 +91,6 @@ html {
 
 html, body {
   height: 100%;
-  /* Use dynamic viewport height on mobile to account for browser chrome */
-  height: 100dvh;
   overflow: hidden;
   position: fixed;
   inset: 0;
